@@ -1,22 +1,23 @@
 package com.example.monument_hunting.ui.theme.maps_activity
 
-import android.annotation.SuppressLint
-import android.location.LocationManager
+import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.app.PendingIntent
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.location.LocationServices
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.monument_hunting.utils.Data
+import com.example.monument_hunting.utils.LocationError
+import com.example.monument_hunting.view_models.LocationViewModel
+import com.google.android.gms.location.Priority
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -24,73 +25,99 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
-@SuppressLint("MissingPermission")
+
 @Composable
-fun ComposeTreasureMap(
-    permissionsMissing: List<String>
+fun RequestPermission(
+    permission: String,
+    onResult: (Boolean) -> Unit,
 ){
 
-    val permissionGranted = remember {
-        mutableStateListOf<String>()
-    }
-    val permissionDenied = remember {
-        mutableStateListOf<String>()
-    }
-    var pos by remember {
-        mutableStateOf<LatLng?>(null)
-    }
-
     val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-        for(result in results){
-            if(result.value)
-                permissionGranted.add(result.key)
-            else
-                permissionDenied.add(result.key)
-        }
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        onResult(isGranted)
     }
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.Main) {
-            Log.d("Launched", "Effect")
-        }
-        if(permissionsMissing.isNotEmpty())
-            launcher.launch(permissionsMissing.toTypedArray())
+        launcher.launch(permission)
     }
 
-    GMaps(pos)
+    // TODO Explain why your app needs the permission:
+    //  https://developer.android.com/training/permissions/requesting#explain
 
-    if(permissionGranted == permissionsMissing) {
-        val fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(LocalContext.current)
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-            location.let{
-                pos = LatLng(it.latitude, it.longitude)
-            }
-        }
-    }
 
 }
 
 @Composable
-fun GMaps(
-    position: LatLng?
+fun RequestLocationServices(
+    intent: PendingIntent,
+    onResult: (Boolean) -> Unit
 ){
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { activityResult ->
+        onResult(activityResult.resultCode == RESULT_OK)
+    }
+
+    LaunchedEffect(Unit) {
+        launcher.launch(
+            IntentSenderRequest.Builder(intent).build()
+        )
+    }
+
+}
+
+
+@Composable
+fun ComposeTreasureMap(
+    locationViewModel: LocationViewModel,
+) {
+    val permission = Manifest.permission.ACCESS_FINE_LOCATION
+    val location by locationViewModel.location.collectAsStateWithLifecycle()
+
+    when (location.status) {
+
+        Data.Status.Success -> GMaps(location.data)
+        Data.Status.Loading -> GMaps(null)
+        Data.Status.Error -> {
+            GMaps(null)
+            when (location.error!!) {
+
+                is LocationError.MissingPermissions -> {
+                    RequestPermission(permission) { isGranted ->
+                        if (isGranted)
+                            locationViewModel.startPositionTracking()
+                    }
+                }
+                is LocationError.LocationServicesDisabled -> {
+                    val error = location.error as? LocationError.LocationServicesDisabled
+                    if (error?.resolvableApiException != null)
+                        RequestLocationServices(error.resolvableApiException.resolution) { success ->
+                            if (success)
+                                locationViewModel.startPositionTracking()
+                        }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GMaps(
+    myPosition: LatLng?
+){
+
     var myMarkerState: MarkerState? = null
     var cameraPositionState = rememberCameraPositionState()
-    position?.let{
+    myPosition?.let{
         myMarkerState = rememberMarkerState(null, it)
         cameraPositionState = rememberCameraPositionState{
             this.position = CameraPosition.fromLatLngZoom(it, 10F)
         }
 
     }
-
-
 
     GoogleMap(
         cameraPositionState = cameraPositionState,

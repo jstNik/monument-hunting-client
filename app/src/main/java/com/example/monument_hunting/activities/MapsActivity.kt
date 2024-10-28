@@ -5,36 +5,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
 import com.example.monument_hunting.ui.theme.maps_activity.ComposeTreasureMap
+import com.example.monument_hunting.view_models.LocationViewModel
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 
 class MapsActivity : ComponentActivity() {
+
+    private val locationViewModel: LocationViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        locationViewModel.startPositionTracking(PRIORITY_HIGH_ACCURACY, 1000L)
         enableEdgeToEdge()
         setContent {
             MonumentHuntingTheme {
                 ComposeTreasureMap(
-                    checkPositionPermission()
+                    locationViewModel
                 )
             }
         }
     }
 
-    private fun checkPositionPermission(): List<String> {
-        val checkCoarseLocation =
-            checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        val checkFineLocation =
-            checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        val permissionsToRequest = mutableListOf<String>()
-        if(checkCoarseLocation == PackageManager.PERMISSION_DENIED)
-            permissionsToRequest.add(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        if(checkFineLocation == PackageManager.PERMISSION_DENIED)
-            permissionsToRequest.add(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        return permissionsToRequest
+    override fun onResume() {
+        super.onResume()
+        locationViewModel.startPositionTracking()
     }
 
 }
