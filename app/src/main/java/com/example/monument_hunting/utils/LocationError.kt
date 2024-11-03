@@ -1,23 +1,30 @@
 package com.example.monument_hunting.utils
 
+import android.app.PendingIntent
+import android.content.Intent
 import com.google.android.gms.common.api.ResolvableApiException
 
 sealed class LocationError(open val message: String?) {
 
     class MissingPermissions(
-        override val message: String?
+        override val message: String?,
+        val missingPermissions: List<String>?
     ): LocationError(message){
-        constructor() : this(null)
+        constructor() : this(null, null)
     }
 
     class LocationServicesDisabled(
         override val message: String?,
-        val resolvableApiException: ResolvableApiException?,
+        val exception: ResolvableApiException?,
     ) : LocationError(message) {
-        constructor(resolvableApiException: ResolvableApiException?) : this(
-            null,
-            resolvableApiException
-        )
+        constructor(exception: ResolvableApiException) : this(null, exception)
         constructor(): this(null, null)
     }
+
+    class LocationUnreachable(
+        override val message: String?
+    ): LocationError(message){
+        constructor(): this(null)
+    }
+
 }

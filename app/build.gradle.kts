@@ -75,6 +75,10 @@ dependencies {
 
     // Android Maps Compose composables for the Maps SDK for Android
     implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.utils.ktx)
+
+    implementation(libs.gson)
 
 }
 java {
