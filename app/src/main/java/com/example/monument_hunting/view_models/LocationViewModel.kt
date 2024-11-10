@@ -17,9 +17,11 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+@HiltViewModel
 class LocationViewModel(private val application: Application): AndroidViewModel(application) {
 
     private var _location = MutableStateFlow<Data<LatLng?, LocationError>>(Data.loading())
