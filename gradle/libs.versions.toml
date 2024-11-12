@@ -2,8 +2,8 @@
 agp = "8.7.2"
 converterGson = "2.9.0"
 gson = "2.10.1"
-hiltAndroid = "2.51.1"
-kotlin = "2.0.0"
+hiltAndroid = "2.52"
+kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -17,6 +17,7 @@ playServicesMaps = "19.0.0"
 retrofit = "2.9.0"
 secretsGradlePlugin = "2.0.1"
 playServicesLocation = "21.3.0"
+ksp = "2.0.21-1.0.27"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,4 +50,6 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid"}
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 
