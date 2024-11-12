@@ -5,6 +5,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.util.Log
 import androidx.activity.result.ActivityResult
@@ -23,10 +24,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
-
-class LocationViewModel(
-    private val application: Application
-): AndroidViewModel(application) {
+@HiltViewModel
+class LocationViewModel @Inject constructor(
+    @ApplicationContext private val application: Context
+): AndroidViewModel(application as Application) {
 
     private var _location = MutableStateFlow<Data<LatLng?, LocationError>>(Data.loading())
     val location

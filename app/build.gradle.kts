@@ -38,11 +38,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -78,6 +78,7 @@ dependencies {
 
     // Android Maps Compose composables for the Maps SDK for Android
     implementation(libs.maps.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.play.services.maps)
     implementation(libs.maps.utils.ktx)
 
