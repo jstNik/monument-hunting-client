@@ -5,14 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monument_hunting.api.MonumentHuntingApi
 import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
-import com.example.monument_hunting.ui.theme.maps_activity.ComposeTreasureMap
+import com.example.monument_hunting.ui.composables.ComposeTreasureMap
 import com.example.monument_hunting.utils.LocationReceiver
+import com.example.monument_hunting.view_models.ApiViewModel
 import com.example.monument_hunting.view_models.LocationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +21,7 @@ import javax.inject.Inject
 class MapsActivity : ComponentActivity() {
 
     private val locationViewModel: LocationViewModel by viewModels()
+    private val apiViewModel: ApiViewModel by viewModels()
     private var locationReceiver: LocationReceiver? = null
 
     @Inject
@@ -32,14 +31,13 @@ class MapsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         locationReceiver = LocationReceiver(locationViewModel)
         locationViewModel.startPositionTracking()
-//        lifecycleScope.launch(Dispatchers.IO) {
-//            val res = api.requestZones()
-//        }
+        apiViewModel.requestZones()
+
+
         setContent {
             MonumentHuntingTheme {
+                ComposeTreasureMap()
 
-                ComposeTreasureMap(locationViewModel)
-//                val vm = viewModel<LocationViewModel>()
             }
         }
     }

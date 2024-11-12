@@ -1,6 +1,7 @@
 package com.example.monument_hunting.di
 
 import com.example.monument_hunting.api.MonumentHuntingApi
+import com.example.monument_hunting.repositories.ApiRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,4 +30,10 @@ object AppModule {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create()
+
+    @Provides
+    @Singleton
+    fun providesApiRepository(api: MonumentHuntingApi) =
+        ApiRepository(api)
+
 }

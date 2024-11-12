@@ -1,4 +1,4 @@
-package com.example.monument_hunting.ui.theme.maps_activity
+package com.example.monument_hunting.ui.composables
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -6,24 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import com.example.monument_hunting.domain.Monument
-import com.google.android.gms.maps.model.AdvancedMarkerOptions
-import com.google.android.gms.maps.model.AdvancedMarkerOptions.CollisionBehavior
 import com.google.android.gms.maps.model.AdvancedMarkerOptions.CollisionBehavior.REQUIRED_AND_HIDES_OPTIONAL
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PinConfig
-import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMapComposable
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberMarkerState
-import kotlin.random.Random
 
 @Composable
 @GoogleMapComposable
