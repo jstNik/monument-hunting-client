@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -29,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monument_hunting.R
 import com.example.monument_hunting.utils.Data
 import com.example.monument_hunting.utils.LocationError
-import com.example.monument_hunting.view_models.ApiViewModel
+import com.example.monument_hunting.view_models.HomePageViewModel
 import com.example.monument_hunting.view_models.LocationViewModel
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -187,8 +186,8 @@ fun GMaps(
             .toHexString(MaterialTheme.colorScheme.secondary.toArgb())
             .replaceRange(0..1, "#")
     )
-    val apiViewModel = viewModel<ApiViewModel>()
-    val zoneState by apiViewModel.zones.collectAsStateWithLifecycle()
+    val homePageViewModel = viewModel<HomePageViewModel>()
+    val zoneState by homePageViewModel.zones.collectAsStateWithLifecycle()
 
     GoogleMap(
         cameraPositionState = cameraPositionState,
