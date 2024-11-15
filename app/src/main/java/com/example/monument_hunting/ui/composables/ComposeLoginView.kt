@@ -1,6 +1,7 @@
 package com.example.monument_hunting.ui.composables
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicSecureTextField
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
@@ -37,11 +39,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Companion
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -129,19 +135,24 @@ fun ComposeLoginView(){
         val annotatedText = buildAnnotatedString {
             append("Hello, welcome!\n")
             if(signup) {
+                pushStringAnnotation(tag = "login", annotation = "login")
                 pushStyle(
                     style = SpanStyle(
                         color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )
                 )
-                pushStringAnnotation(tag = "signup", annotation = "signup")
                 append("Login")
                 pop()
                 pop()
+                pushStringAnnotation(tag = "signup", annotation = "signup")
                 append(" or signup")
+                pop()
             }else{
-                append("Login or ")
+                pushStringAnnotation(tag = "login", annotation = "login")
+                append("Login")
+                pop()
+                append(" or ")
                 pushStyle(
                     style = SpanStyle(
                         color = MaterialTheme.colorScheme.primary,
@@ -156,15 +167,28 @@ fun ComposeLoginView(){
             append(" to continue")
 
         }
-        Text (
-            annotatedText,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier= Modifier
-                .padding(bottom = 4.dp)
-                .clickable {
-                    focusManager.clearFocus()
-                    signup = !signup
+
+        var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+
+        Text(
+            text = annotatedText,
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures { pos ->
+                    layoutResult?.let { layoutResult ->
+                        val offset = layoutResult.getOffsetForPosition(pos)
+                        annotatedText.getStringAnnotations(
+                            if (!signup) "signup" else "login",
+                            offset,
+                            offset
+                        ).firstOrNull()?.let {
+                            signup = !signup
+                        }
+                    }
                 }
+            },
+            onTextLayout = {
+                layoutResult = it
+            }
         )
 
         LoginSignupForm(
@@ -225,6 +249,7 @@ fun LoginSignupForm(
     TextFields.entries.forEachIndexed { i, entry ->
         if (!signup && entry == TextFields.Email)
             return@forEachIndexed
+        val focusRequester = remember{ FocusRequester() }
         var error = false
         if (result.status == Data.Status.Error && !allFieldsWrong) {
             error = result.error?.contains("username", true) == true && entry == TextFields.Username
@@ -260,9 +285,7 @@ fun LoginSignupForm(
             placeholder = { Text(entry.hint) },
             modifier = Modifier
                 .padding(top = 4.dp, bottom = 4.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures { }
-                }
+                .focusRequester(focusRequester)
         )
         if(i == TextFields.entries.size - 1 && allFieldsWrong)
             Box {
