@@ -73,7 +73,7 @@ class ApiRepository @Inject constructor(
             try {
                 action()
             } catch (ex: Exception) {
-                throw ApiRequestException(null, ex.message ?: "", ex)
+                throw ApiRequestException(null, ex.message, ex)
             }
         }
     }
@@ -82,7 +82,7 @@ class ApiRepository @Inject constructor(
         if (!response.isSuccessful)
             throw ApiRequestException(
                 response.code(),
-                response.message(),
+                response.errorBody()?.string() ?: response.message(),
                 null
             )
         if (response.body() == null)

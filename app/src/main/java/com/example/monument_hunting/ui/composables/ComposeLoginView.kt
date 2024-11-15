@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -119,8 +120,8 @@ fun ComposeLoginView(){
         modifier= Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .pointerInput(Unit){
-                detectTapGestures{
+            .pointerInput(Unit) {
+                detectTapGestures {
                     focusManager.clearFocus()
                 }
             }
@@ -130,7 +131,7 @@ fun ComposeLoginView(){
             if(signup) {
                 pushStyle(
                     style = SpanStyle(
-                        color = Color.Blue,
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )
                 )
@@ -143,7 +144,7 @@ fun ComposeLoginView(){
                 append("Login or ")
                 pushStyle(
                     style = SpanStyle(
-                        color = Color.Blue,
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )
                 )
@@ -200,12 +201,7 @@ fun ComposeLoginView(){
                     )
                 }
             },
-            onFailure = { error ->
-                Text(
-                    "✘ $error",
-                    color=MaterialTheme.colorScheme.onBackground
-                )
-            }
+            onFailure = { }
         )
 
     }
@@ -223,15 +219,25 @@ fun LoginSignupForm(
     val focusManager = LocalFocusManager.current
     val loginSignupViewModel = viewModel<LoginSignupViewModel>()
     val result by loginSignupViewModel.loginSignupSuc.collectAsStateWithLifecycle()
+    var allFieldsWrong = result.status == Data.Status.Error &&
+            result.error?.contains(Regex("username|password|email", RegexOption.IGNORE_CASE)) == false
 
-    TextFields.entries.forEach { entry ->
+    TextFields.entries.forEachIndexed { i, entry ->
         if (!signup && entry == TextFields.Email)
-            return@forEach
+            return@forEachIndexed
+        var error = false
+        if (result.status == Data.Status.Error && !allFieldsWrong) {
+            error = result.error?.contains("username", true) == true && entry == TextFields.Username
+                    || result.error?.contains("password", true) == true && entry == TextFields.Password
+                    || result.error?.contains("email", true) == true && entry == TextFields.Email
+        }
+
         TextField(
             value = entry.textFieldValue,
             onValueChange = {
                 entry.textFieldValue = it
             },
+            isError = error || allFieldsWrong,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
@@ -250,14 +256,23 @@ fun LoginSignupForm(
                 )
             } else KeyboardActions.Default,
             visualTransformation = entry.visualTransformation,
-            label = { Text(entry.label) },
+            label = { Text(if (error && result.error != null) result.error!! else entry.label) },
             placeholder = { Text(entry.hint) },
             modifier = Modifier
                 .padding(top = 4.dp, bottom = 4.dp)
-                .pointerInput(Unit){
-                    detectTapGestures{ }
+                .pointerInput(Unit) {
+                    detectTapGestures { }
                 }
         )
+        if(i == TextFields.entries.size - 1 && allFieldsWrong)
+            Box {
+                Text(
+                    result.error ?: "",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
     }
 
     when(result.status){
@@ -286,7 +301,7 @@ fun LoginSignupForm(
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer
         ),
-        modifier = Modifier.padding(top=4.dp, bottom=4.dp)
+        modifier = Modifier.padding(vertical = 8.dp)
     ) {
         Text(if(signup) "Sign up" else "Log in")
     }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.monument_hunting.exceptions.ApiRequestException
 import com.example.monument_hunting.repositories.ApiRepository
 import com.example.monument_hunting.utils.Data
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,12 +41,12 @@ class LoginSignupViewModel @Inject constructor(
                 repository.loginSignup(signup, username, email, password)
                 _loginSignupSuc.value = Data.success<Boolean, String>(true)
             } catch (ex: ApiRequestException) {
-                var error = "Error "
-                ex.responseCode?.let{
-                    error += it
-                }
-                ex.message?.let{
-                    error += ": $it"
+                var error = "Error"
+                try{
+                    val json = Gson().fromJson(ex.message, JsonObject::class.java)
+                    error = json.get("error").asString
+                } catch(_: Exception) {
+                    // Do Nothing
                 }
                 _loginSignupSuc.value = Data.error<Boolean, String>(error)
             }
