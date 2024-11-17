@@ -9,13 +9,13 @@ import kotlin.random.Random
 
 data class Zone(
     @SerializedName("color")
-    var hexColor: String,
+    var hexColor: String = "",
     @SerializedName("coordinates")
-    var coordinates: List<Coordinate>,
+    var coordinates: List<Coordinate> = listOf(),
     @SerializedName("id")
-    var id: Int,
+    var id: Int = 0,
     @SerializedName("name")
-    var name: String
+    var name: String = ""
 ){
     val color @SuppressLint("Range")
     get() = try{

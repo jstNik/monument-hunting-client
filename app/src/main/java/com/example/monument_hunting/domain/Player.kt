@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Player(
     @SerializedName("id")
-    var id: Int,
+    var id: Int = 0,
     @SerializedName("username")
-    var username: String,
+    var username: String = "",
     @SerializedName("zone")
     var zone: Int? = null
 )

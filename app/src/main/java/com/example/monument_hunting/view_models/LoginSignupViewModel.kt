@@ -2,6 +2,8 @@ package com.example.monument_hunting.view_models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.monument_hunting.domain.AuthResponse
+import com.example.monument_hunting.domain.Player
 import com.example.monument_hunting.exceptions.ApiRequestException
 import com.example.monument_hunting.repositories.ApiRepository
 import com.example.monument_hunting.utils.Data
@@ -15,18 +17,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginSignupViewModel @Inject constructor(
-    val repository: ApiRepository
+    private val repository: ApiRepository
 ) : ViewModel() {
 
-    private val _loginSignupSuc = MutableStateFlow(Data.success<Boolean, String>(false))
+    private val _loginSignupSuc = MutableStateFlow(Data.success<Player, String>(null))
     val loginSignupSuc
         get() = _loginSignupSuc.asStateFlow()
 
     fun verifyToken() {
         viewModelScope.launch {
             try {
-                if (repository.verifyToken())
-                    _loginSignupSuc.value = Data.success<Boolean, String>(true)
+                val res = repository.verifyToken()
+                _loginSignupSuc.value = Data.success(res)
             } catch (_: ApiRequestException) {
                 return@launch
             }
@@ -35,11 +37,11 @@ class LoginSignupViewModel @Inject constructor(
 
     fun loginSignup(signup: Boolean, username: String, email: String, password: String) {
 
-        _loginSignupSuc.value = Data.loading<Boolean, String>()
+        _loginSignupSuc.value = Data.loading()
         viewModelScope.launch {
             try {
-                repository.loginSignup(signup, username, email, password)
-                _loginSignupSuc.value = Data.success<Boolean, String>(true)
+                val player = repository.loginSignup(signup, username, email, password)
+                _loginSignupSuc.value = Data.success(player)
             } catch (ex: ApiRequestException) {
                 var error = "Error"
                 try{
@@ -48,7 +50,7 @@ class LoginSignupViewModel @Inject constructor(
                 } catch(_: Exception) {
                     // Do Nothing
                 }
-                _loginSignupSuc.value = Data.error<Boolean, String>(error)
+                _loginSignupSuc.value = Data.error(error)
             }
         }
     }

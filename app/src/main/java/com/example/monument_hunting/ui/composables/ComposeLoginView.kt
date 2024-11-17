@@ -64,9 +64,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monument_hunting.activities.LoginActivity
 import com.example.monument_hunting.activities.MapsActivity
+import com.example.monument_hunting.domain.Player
 import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
 import com.example.monument_hunting.utils.Data
 import com.example.monument_hunting.view_models.LoginSignupViewModel
+import com.google.gson.Gson
 
 private enum class TextFields{
     Username{
@@ -172,6 +174,7 @@ fun ComposeLoginView(){
 
         Text(
             text = annotatedText,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.pointerInput(Unit) {
                 detectTapGestures { pos ->
                     layoutResult?.let { layoutResult ->
@@ -193,13 +196,14 @@ fun ComposeLoginView(){
 
         LoginSignupForm(
             signup=signup,
-            onSuccess = { valid ->
-                if(valid == true) {
+            onSuccess = { player ->
+                player?.let{
                     Text(
                         "✔ Success",
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     val intent = Intent(context, MapsActivity::class.java)
+                    intent.putExtra("player", Gson().toJson(it))
                     context.startActivity(intent)
                     (context as? LoginActivity)?.finish()
                 }
@@ -235,7 +239,7 @@ fun ComposeLoginView(){
 @Composable
 fun LoginSignupForm(
     signup: Boolean,
-    onSuccess: @Composable (valid: Boolean?) -> Unit,
+    onSuccess: @Composable (valid: Player?) -> Unit,
     onLoading: @Composable () -> Unit,
     onFailure: @Composable (error: String?) -> Unit
 ){
@@ -243,7 +247,7 @@ fun LoginSignupForm(
     val focusManager = LocalFocusManager.current
     val loginSignupViewModel = viewModel<LoginSignupViewModel>()
     val result by loginSignupViewModel.loginSignupSuc.collectAsStateWithLifecycle()
-    var allFieldsWrong = result.status == Data.Status.Error &&
+    val allFieldsWrong = result.status == Data.Status.Error &&
             result.error?.contains(Regex("username|password|email", RegexOption.IGNORE_CASE)) == false
 
     TextFields.entries.forEachIndexed { i, entry ->

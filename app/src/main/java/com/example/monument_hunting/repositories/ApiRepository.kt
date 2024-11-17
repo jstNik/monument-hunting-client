@@ -2,6 +2,7 @@ package com.example.monument_hunting.repositories
 
 import com.example.monument_hunting.api.AuthTokenManager
 import com.example.monument_hunting.api.FreeApi
+import com.example.monument_hunting.domain.Player
 import com.example.monument_hunting.domain.ServerData
 import com.example.monument_hunting.exceptions.ApiRequestException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -12,16 +13,19 @@ import javax.inject.Inject
 import kotlin.jvm.Throws
 
 class ApiRepository @Inject constructor(
-    val freeApi: FreeApi,
-    val authTokenManager: AuthTokenManager,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val freeApi: FreeApi,
+    private val authTokenManager: AuthTokenManager,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     @Throws(ApiRequestException::class)
-    suspend fun requestAllZones(): ServerData {
+    suspend fun requestData(playerId: Int): ServerData {
         val response = withContext(dispatcher) {
             try {
-                freeApi.requestData("Bearer ${authTokenManager.extractToken().accessToken}")
+                freeApi.requestData(
+                    "Bearer ${authTokenManager.extractToken().accessToken}",
+                    playerId
+                )
             } catch (ex: Exception) {
                 throw ApiRequestException(null, ex.message, ex)
             }
@@ -30,32 +34,33 @@ class ApiRepository @Inject constructor(
         return response.body()!!
     }
 
-    suspend fun refreshToken(): Boolean{
+    suspend fun refreshToken(): Player? {
         if(!authTokenManager.isRefreshTokenValid)
-            return false
+            return null
         val response = call{
             freeApi.refreshToken(authTokenManager.extractToken().refreshToken)
         }
         validateResponse(response)
-        val token = response.body()!!
-        authTokenManager.saveToken(token)
-        return true
+        val auth = response.body()!!
+        authTokenManager.saveToken(auth.authToken)
+        return auth.player
     }
 
-    suspend fun verifyToken(): Boolean {
+    suspend fun verifyToken(): Player? {
         try {
             if (!authTokenManager.isAccessTokenValid)
                 return refreshToken()
             val response = call {
                 freeApi.verifyToken(authTokenManager.extractToken().accessToken)
             }
-            return response.isSuccessful
+            validateResponse(response)
+            return response.body()!!.player
         } catch (e: Exception){
             throw ApiRequestException(null, e.message, e)
         }
     }
 
-    suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String) {
+    suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String): Player {
         val response = call {
             if (signup)
                 freeApi.signup(username, email, password)
@@ -64,7 +69,8 @@ class ApiRepository @Inject constructor(
             }
         }
         validateResponse(response)
-        authTokenManager.saveToken(response.body()!!)
+        authTokenManager.saveToken(response.body()!!.authToken)
+        return response.body()!!.player
     }
 
 

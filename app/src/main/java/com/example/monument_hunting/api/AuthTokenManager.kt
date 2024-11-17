@@ -1,6 +1,7 @@
 package com.example.monument_hunting.api
 
 import android.content.Context
+import com.example.monument_hunting.domain.AuthToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlin.time.Duration.Companion.milliseconds
@@ -22,7 +23,7 @@ class AuthTokenManager(
             return token.accessExpirationSec.seconds > System.currentTimeMillis().milliseconds
         }
 
-    fun extractToken(): AuthToken{
+    fun extractToken(): AuthToken {
         val tk = context
             .getSharedPreferences("AuthToken", Context.MODE_PRIVATE)
             .getString("authToken", null)

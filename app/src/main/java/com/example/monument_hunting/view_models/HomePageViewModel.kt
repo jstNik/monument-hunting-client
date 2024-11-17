@@ -14,21 +14,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomePageViewModel @Inject constructor(
-    val repository: ApiRepository
+    private val repository: ApiRepository
 ) : ViewModel() {
 
     private val _serverData = MutableStateFlow(Data.loading<ServerData, ApiRequestException>())
     val serverData get() = _serverData.asStateFlow()
 
-    fun requestZones() {
+    fun requestData(playerId: Int) {
         try {
-            _serverData.value = Data.loading<ServerData, ApiRequestException>()
+            _serverData.value = Data.loading()
             viewModelScope.launch {
-                val zoneList = repository.requestAllZones()
-                _serverData.value = Data.success<ServerData, ApiRequestException>(zoneList)
+                val zoneList = repository.requestData(playerId)
+                _serverData.value = Data.success(zoneList)
             }
         } catch (ex: ApiRequestException) {
-            _serverData.value = Data.error<ServerData, ApiRequestException>(ex)
+            _serverData.value = Data.error(ex)
         }
     }
 

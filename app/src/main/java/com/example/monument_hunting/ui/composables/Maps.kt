@@ -183,7 +183,7 @@ fun GMaps(
     bufferReader.close()
     res = res.format(
         Integer
-            .toHexString(MaterialTheme.colorScheme.secondary.toArgb())
+            .toHexString(MaterialTheme.colorScheme.inverseSurface.toArgb())
             .replaceRange(0..1, "#")
     )
     val homePageViewModel = viewModel<HomePageViewModel>()
@@ -209,6 +209,12 @@ fun GMaps(
             Data.Status.Success -> {
                 serverData.data!!.zones.forEach {
                     ZonePolygon(
+                        it
+                    )
+                }
+                serverData.data!!.riddles.forEach {
+                    MonumentMarker(
+                        cameraPositionState,
                         it
                     )
                 }

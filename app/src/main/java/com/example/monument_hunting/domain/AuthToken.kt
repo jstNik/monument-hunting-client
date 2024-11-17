@@ -1,8 +1,6 @@
-package com.example.monument_hunting.api
+package com.example.monument_hunting.domain
 
 import com.google.gson.annotations.SerializedName
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 data class AuthToken(
 
