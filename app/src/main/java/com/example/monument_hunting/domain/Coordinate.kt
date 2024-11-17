@@ -6,9 +6,11 @@ import com.google.gson.annotations.SerializedName
 
 data class Coordinate(
     @SerializedName("latitude")
-    var latitude: Double = 0.0,
+    var latitude: Double,
     @SerializedName("longitude")
-    var longitude: Double = 0.0
+    var longitude: Double
 ){
+
     val latLng get() = LatLng(latitude, longitude)
+
 }

@@ -1,13 +1,12 @@
 package com.example.monument_hunting.api
 
-import com.example.monument_hunting.domain.ZoneList
+import com.example.monument_hunting.domain.ServerData
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 interface FreeApi {
 
@@ -16,9 +15,9 @@ interface FreeApi {
     }
 
     @GET("zones/all/")
-    suspend fun requestZones(
+    suspend fun requestData(
         @Header("Authorization") bearer: String
-    ): Response<ZoneList>
+    ): Response<ServerData>
 
     @FormUrlEncoded
     @POST("players/auth/refresh/")

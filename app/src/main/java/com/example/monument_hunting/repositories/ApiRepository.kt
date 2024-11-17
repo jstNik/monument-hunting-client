@@ -2,7 +2,7 @@ package com.example.monument_hunting.repositories
 
 import com.example.monument_hunting.api.AuthTokenManager
 import com.example.monument_hunting.api.FreeApi
-import com.example.monument_hunting.domain.Zone
+import com.example.monument_hunting.domain.ServerData
 import com.example.monument_hunting.exceptions.ApiRequestException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -18,16 +18,16 @@ class ApiRepository @Inject constructor(
 ) {
 
     @Throws(ApiRequestException::class)
-    suspend fun requestAllZones(): List<Zone> {
+    suspend fun requestAllZones(): ServerData {
         val response = withContext(dispatcher) {
             try {
-                freeApi.requestZones("Bearer ${authTokenManager.extractToken().accessToken}")
+                freeApi.requestData("Bearer ${authTokenManager.extractToken().accessToken}")
             } catch (ex: Exception) {
                 throw ApiRequestException(null, ex.message, ex)
             }
         }
         validateResponse(response)
-        return response.body()!!.toList()
+        return response.body()!!
     }
 
     suspend fun refreshToken(): Boolean{

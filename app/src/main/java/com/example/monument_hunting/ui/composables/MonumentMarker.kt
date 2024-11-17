@@ -24,7 +24,7 @@ fun MonumentMarker(
 ){
 
     val markerState = rememberMarkerState(
-        position = monument.circleCenter
+        position = monument.position
     )
     var clicked by remember{
         mutableStateOf(false)
@@ -32,7 +32,7 @@ fun MonumentMarker(
 
     if(clicked)
         Circle(
-            monument.circleCenter,
+            monument.position,
             fillColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5F),
             radius = 100.0,
             strokeColor = MaterialTheme.colorScheme.tertiary,

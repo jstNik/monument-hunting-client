@@ -6,22 +6,21 @@ import android.graphics.Color.parseColor
 import androidx.compose.ui.graphics.Color
 import com.google.gson.annotations.SerializedName
 import kotlin.random.Random
-import kotlin.uuid.Uuid.Companion.random
 
 data class Zone(
-    @SerializedName("coordinates")
-    var coordinates: List<Coordinate> = listOf(),
-    @SerializedName("id")
-    var id: Int = 0,
-    @SerializedName("name")
-    var name: String = "",
     @SerializedName("color")
-    var hexColor: String = ""
+    var hexColor: String,
+    @SerializedName("coordinates")
+    var coordinates: List<Coordinate>,
+    @SerializedName("id")
+    var id: Int,
+    @SerializedName("name")
+    var name: String
 ){
     val color @SuppressLint("Range")
     get() = try{
-        Color(parseColor(hexColor)).copy(alpha=0.5F)
-    } catch (_: IllegalArgumentException){
-        Color((Random.nextDouble()*0xFFFFFF).toLong())
-    }
+            Color(parseColor(hexColor)).copy(alpha=0.5F)
+        } catch (_: IllegalArgumentException){
+            Color((Random.nextDouble() * 0xFFFFFF).toLong())
+        }
 }

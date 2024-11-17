@@ -187,7 +187,7 @@ fun GMaps(
             .replaceRange(0..1, "#")
     )
     val homePageViewModel = viewModel<HomePageViewModel>()
-    val zoneState by homePageViewModel.zones.collectAsStateWithLifecycle()
+    val serverData by homePageViewModel.serverData.collectAsStateWithLifecycle()
 
     GoogleMap(
         cameraPositionState = cameraPositionState,
@@ -205,9 +205,9 @@ fun GMaps(
         )
     ) {
 
-        when(zoneState.status){
+        when(serverData.status){
             Data.Status.Success -> {
-                zoneState.data!!.forEach {
+                serverData.data!!.zones.forEach {
                     ZonePolygon(
                         it
                     )

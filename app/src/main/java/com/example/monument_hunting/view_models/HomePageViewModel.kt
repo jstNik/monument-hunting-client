@@ -2,7 +2,7 @@ package com.example.monument_hunting.view_models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.monument_hunting.domain.Zone
+import com.example.monument_hunting.domain.ServerData
 import com.example.monument_hunting.exceptions.ApiRequestException
 import com.example.monument_hunting.repositories.ApiRepository
 import com.example.monument_hunting.utils.Data
@@ -17,18 +17,18 @@ class HomePageViewModel @Inject constructor(
     val repository: ApiRepository
 ) : ViewModel() {
 
-    private val _zones = MutableStateFlow(Data.loading<List<Zone>, ApiRequestException>())
-    val zones get() = _zones.asStateFlow()
+    private val _serverData = MutableStateFlow(Data.loading<ServerData, ApiRequestException>())
+    val serverData get() = _serverData.asStateFlow()
 
     fun requestZones() {
         try {
-            _zones.value = Data.loading<List<Zone>, ApiRequestException>()
+            _serverData.value = Data.loading<ServerData, ApiRequestException>()
             viewModelScope.launch {
                 val zoneList = repository.requestAllZones()
-                _zones.value = Data.success<List<Zone>, ApiRequestException>(zoneList)
+                _serverData.value = Data.success<ServerData, ApiRequestException>(zoneList)
             }
         } catch (ex: ApiRequestException) {
-            _zones.value = Data.error<List<Zone>, ApiRequestException>(ex)
+            _serverData.value = Data.error<ServerData, ApiRequestException>(ex)
         }
     }
 
