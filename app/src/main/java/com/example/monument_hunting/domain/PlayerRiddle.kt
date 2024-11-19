@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class PlayerRiddle(
     @SerializedName("id")
-    var id: Int,
+    var id: Int = 0,
     @SerializedName("is_completed")
-    var isCompleted: Boolean,
+    var isCompleted: Boolean = false,
     @SerializedName("player")
-    var player: Int,
+    var player: Int = 0,
     @SerializedName("riddle")
-    var riddle: Riddle
+    var riddle: Riddle = Riddle()
 )

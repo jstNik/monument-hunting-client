@@ -21,6 +21,6 @@ data class Zone(
     get() = try{
             Color(parseColor(hexColor)).copy(alpha=0.5F)
         } catch (_: IllegalArgumentException){
-            Color((Random.nextDouble() * 0xFFFFFF).toLong())
+            Color((Random.nextDouble() * 0xFFFFFF).toLong()).copy(alpha=0.5F)
         }
 }

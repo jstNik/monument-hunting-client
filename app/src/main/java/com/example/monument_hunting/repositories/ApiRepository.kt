@@ -34,6 +34,7 @@ class ApiRepository @Inject constructor(
         return response.body()!!
     }
 
+    @Throws(ApiRequestException::class)
     suspend fun refreshToken(): Player? {
         if(!authTokenManager.isRefreshTokenValid)
             return null
@@ -46,6 +47,7 @@ class ApiRepository @Inject constructor(
         return auth.player
     }
 
+    @Throws(ApiRequestException::class)
     suspend fun verifyToken(): Player? {
         try {
             if (!authTokenManager.isAccessTokenValid)
@@ -54,12 +56,13 @@ class ApiRepository @Inject constructor(
                 freeApi.verifyToken(authTokenManager.extractToken().accessToken)
             }
             validateResponse(response)
-            return response.body()!!.player
+            return response.body()!!
         } catch (e: Exception){
             throw ApiRequestException(null, e.message, e)
         }
     }
 
+    @Throws(ApiRequestException::class)
     suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String): Player {
         val response = call {
             if (signup)
@@ -73,7 +76,7 @@ class ApiRepository @Inject constructor(
         return response.body()!!.player
     }
 
-
+    @Throws(ApiRequestException::class)
     private suspend fun <T> call(action: suspend () -> Response<T>): Response<T> {
         return withContext(dispatcher) {
             try {
@@ -84,6 +87,7 @@ class ApiRepository @Inject constructor(
         }
     }
 
+    @Throws(ApiRequestException::class)
     private fun <T> validateResponse(response: Response<T>) {
         if (!response.isSuccessful)
             throw ApiRequestException(

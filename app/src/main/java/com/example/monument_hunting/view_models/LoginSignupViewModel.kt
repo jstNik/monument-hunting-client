@@ -1,5 +1,6 @@
 package com.example.monument_hunting.view_models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.monument_hunting.domain.AuthResponse
@@ -10,6 +11,7 @@ import com.example.monument_hunting.utils.Data
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -25,12 +27,12 @@ class LoginSignupViewModel @Inject constructor(
         get() = _loginSignupSuc.asStateFlow()
 
     fun verifyToken() {
-        viewModelScope.launch {
+        viewModelScope.launch() {
             try {
                 val res = repository.verifyToken()
                 _loginSignupSuc.value = Data.success(res)
-            } catch (_: ApiRequestException) {
-                return@launch
+            } catch (e: ApiRequestException) {
+                Log.d("${e.responseCode}", "${e.message}")
             }
         }
     }
@@ -38,7 +40,7 @@ class LoginSignupViewModel @Inject constructor(
     fun loginSignup(signup: Boolean, username: String, email: String, password: String) {
 
         _loginSignupSuc.value = Data.loading()
-        viewModelScope.launch {
+        viewModelScope.launch() {
             try {
                 val player = repository.loginSignup(signup, username, email, password)
                 _loginSignupSuc.value = Data.success(player)

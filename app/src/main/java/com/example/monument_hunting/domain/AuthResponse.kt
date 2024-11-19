@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class AuthResponse (
 
     @SerializedName("auth_token")
-    var authToken: AuthToken = AuthToken(),
+    var authToken: AuthToken,
     @SerializedName("player")
-    var player: Player = Player()
+    var player: Player
 
 )

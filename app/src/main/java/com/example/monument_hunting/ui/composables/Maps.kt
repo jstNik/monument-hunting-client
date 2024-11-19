@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -22,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +39,7 @@ import com.example.monument_hunting.view_models.LocationViewModel
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -97,6 +104,23 @@ fun ComposeTreasureMap() {
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(start=16.dp, top=8.dp, bottom=8.dp)
+                )
+            }
+        },
+        floatingActionButton = {
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                modifier = Modifier.size(48.dp),
+                onClick = {
+                    // TODO
+                }
+            ) {
+                Icon(
+                    painterResource(R.drawable.photo_camera),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
         },
@@ -197,11 +221,16 @@ fun GMaps(
                 .compassEnabled(true)
         },
         uiSettings = MapUiSettings(
-            indoorLevelPickerEnabled = false
+            indoorLevelPickerEnabled = false,
+            zoomControlsEnabled = false
         ),
         properties = MapProperties(
             isMyLocationEnabled = isMyLocationEnabled,
-            mapStyleOptions = MapStyleOptions(res)
+            mapStyleOptions = MapStyleOptions(res),
+            latLngBoundsForCameraTarget = LatLngBounds(
+                LatLng(43.759474957960556, 11.230407175235507),
+                LatLng(43.78624915408978, 11.273451263581741)
+            )
         )
     ) {
 
@@ -212,12 +241,13 @@ fun GMaps(
                         it
                     )
                 }
-                serverData.data!!.riddles.forEach {
-                    MonumentMarker(
-                        cameraPositionState,
-                        it
-                    )
-                }
+                if(serverData.data!!.playerRiddles.all{ it.isCompleted })
+                    serverData.data!!.riddles.forEach {
+                        MonumentMarker(
+                            cameraPositionState,
+                            it
+                        )
+                    }
             }
             Data.Status.Loading ->
                 Toast.makeText(LocalContext.current, "Loading", Toast.LENGTH_LONG).show()

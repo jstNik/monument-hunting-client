@@ -2,6 +2,7 @@ package com.example.monument_hunting.api
 
 import com.example.monument_hunting.domain.AuthResponse
 import com.example.monument_hunting.domain.AuthToken
+import com.example.monument_hunting.domain.Player
 import com.example.monument_hunting.domain.ServerData
 import retrofit2.Response
 import retrofit2.http.Field
@@ -33,7 +34,7 @@ interface FreeApi {
     @POST("players/auth/verify/")
     suspend fun verifyToken(
         @Field("access_token") accessToken: String
-    ): Response<AuthResponse>
+    ): Response<Player>
 
     @FormUrlEncoded
     @POST("players/login/")
