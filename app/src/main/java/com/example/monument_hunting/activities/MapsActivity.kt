@@ -5,6 +5,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.monument_hunting.api.FreeApi
@@ -42,7 +43,7 @@ class MapsActivity : AppCompatActivity() {
         locationReceiver = LocationReceiver(locationViewModel)
         locationViewModel.startPositionTracking()
         homePageViewModel.requestData(player!!.id)
-
+        enableEdgeToEdge()
         setContent {
             MonumentHuntingTheme {
                 ComposeTreasureMap()

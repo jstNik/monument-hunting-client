@@ -20,15 +20,11 @@ class ApiRepository @Inject constructor(
 
     @Throws(ApiRequestException::class)
     suspend fun requestData(playerId: Int): ServerData {
-        val response = withContext(dispatcher) {
-            try {
-                freeApi.requestData(
-                    "Bearer ${authTokenManager.extractToken().accessToken}",
-                    playerId
-                )
-            } catch (ex: Exception) {
-                throw ApiRequestException(null, ex.message, ex)
-            }
+        val response = call {
+            freeApi.requestData(
+                "Bearer ${authTokenManager.extractToken().accessToken}",
+                playerId
+            )
         }
         validateResponse(response)
         return response.body()!!
@@ -64,11 +60,15 @@ class ApiRepository @Inject constructor(
 
     @Throws(ApiRequestException::class)
     suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String): Player {
-        val response = call {
-            if (signup)
-                freeApi.signup(username, email, password)
-            else {
-                freeApi.login(username, password)
+        val response = withContext(dispatcher) {
+            try {
+                if (signup)
+                    freeApi.signup(username, email, password)
+                else {
+                    freeApi.login(username, password)
+                }
+            }catch (ex: Exception) {
+                throw ApiRequestException(null, ex.message, ex)
             }
         }
         validateResponse(response)
@@ -78,6 +78,9 @@ class ApiRepository @Inject constructor(
 
     @Throws(ApiRequestException::class)
     private suspend fun <T> call(action: suspend () -> Response<T>): Response<T> {
+        if (!authTokenManager.isAccessTokenValid)
+            if(refreshToken() == null)
+                throw ApiRequestException(null, "Refresh token is not valid")
         return withContext(dispatcher) {
             try {
                 action()

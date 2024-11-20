@@ -19,8 +19,8 @@ data class Zone(
 ){
     val color @SuppressLint("Range")
     get() = try{
-            Color(parseColor(hexColor)).copy(alpha=0.5F)
+            Color(parseColor(hexColor))
         } catch (_: IllegalArgumentException){
-            Color((Random.nextDouble() * 0xFFFFFF).toLong()).copy(alpha=0.5F)
+            Color((Random.nextDouble() * 0xFFFFFF).toLong())
         }
 }

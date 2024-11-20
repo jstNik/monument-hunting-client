@@ -5,6 +5,11 @@ import com.example.monument_hunting.api.AuthTokenManager
 import com.example.monument_hunting.api.FreeApi
 import com.example.monument_hunting.api.FreeInterceptor
 import com.example.monument_hunting.repositories.ApiRepository
+import com.example.monument_hunting.repositories.MediaPipeRepository
+import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.core.Delegate
+import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,5 +49,28 @@ object AppModule {
     @Singleton
     fun providesApiRepository(freeApi: FreeApi, authTokenManager: AuthTokenManager) =
         ApiRepository(freeApi, authTokenManager)
+
+    @Provides
+    @Singleton
+    fun providesMediaPipeModel(@ApplicationContext context: Context) =
+        ImageClassifier.createFromOptions(
+            context,
+            ImageClassifier.ImageClassifierOptions.builder()
+                .setBaseOptions(
+                    BaseOptions.builder()
+                        .setDelegate(Delegate.GPU)
+                        .setModelAssetPath("efficientnet_lite0.tflite")
+                        .build()
+                )
+//                .setScoreThreshold(0.6F)
+                .setMaxResults(10)
+                .setRunningMode(RunningMode.IMAGE)
+                .build()
+        )
+
+    @Provides
+    @Singleton
+    fun providesMediaPipeRepository(@ApplicationContext context: Context, imageClassifier: ImageClassifier) =
+        MediaPipeRepository(context, imageClassifier)
 
 }

@@ -94,6 +94,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+    implementation(libs.tasks.vision)
+
 }
 java {
     toolchain {

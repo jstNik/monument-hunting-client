@@ -7,16 +7,23 @@ import android.app.Activity.RESULT_OK
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_DENIED
+import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel
 import com.example.monument_hunting.utils.Data
 import com.example.monument_hunting.utils.LocationError
+import com.example.monument_hunting.utils.LocationSourceImpl
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationAvailability
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,6 +47,23 @@ class LocationViewModel @Inject constructor(
     var isLocationRetrieved: Boolean = false
         private set
 
+    val locationSource = LocationSourceImpl()
+
+    val locationCallback = object: LocationCallback(){
+        override fun onLocationAvailability(p0: LocationAvailability) {
+            if(!p0.isLocationAvailable)
+                startPositionTracking()
+        }
+
+        override fun onLocationResult(p0: LocationResult) {
+            p0.lastLocation?.let {
+                locationSource.callback?.onLocationChanged(it)
+                _location.value = Data.success<LatLng?, LocationError>(LatLng(it.latitude, it.longitude))
+            }
+        }
+
+    }
+
 
     fun startPositionTracking(){
         startPositionTracking(priority)
@@ -58,7 +82,7 @@ class LocationViewModel @Inject constructor(
         if (activityResult.resultCode == RESULT_OK) {
             Log.d("RESPONSE", "SUCCESS")
             if (havePerms())
-                emitLocation()
+                startPositionTracking()
         }
     }
 
@@ -82,6 +106,7 @@ class LocationViewModel @Inject constructor(
         return !fineLocationMissing && !coarseLocationMissing
     }
 
+    @SuppressLint("MissingPermission")
     private fun checkLocationSettings(){
         val requestLocation = LocationRequest
             .Builder(priority, 1000)
@@ -95,12 +120,8 @@ class LocationViewModel @Inject constructor(
             .getSettingsClient(application.applicationContext)
             .checkLocationSettings(locationSettings)
             .addOnSuccessListener {
-                if(location.value.status != Data.Status.Success) {
-                    Log.d("RESPONSE", "SUCCESS LIST")
-                    emitLocation()
-                }
+                fusedLocation.requestLocationUpdates(requestLocation, locationCallback, Looper.getMainLooper())
             }.addOnFailureListener { exception ->
-                Log.d("RESPONSE", "ERROR")
                 _location.value = Data.error(
                     if (exception is ResolvableApiException)
                     LocationError.LocationServicesDisabled(
@@ -112,20 +133,14 @@ class LocationViewModel @Inject constructor(
             }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun emitLocation() {
-        if (havePerms())
-            fusedLocation.getCurrentLocation(priority, null).addOnSuccessListener {
-                if (it != null) {
-                    _location.value = Data.success(
-                        LatLng(it.latitude, it.longitude)
-                    )
-                    isLocationRetrieved = true
-                } else {
-                    _location.value = Data.error(LocationError.LocationUnreachable())
-                    isLocationRetrieved = false
-                }
-            }
+    fun stopLocationTracking(){
+        fusedLocation.removeLocationUpdates(locationCallback)
+        locationSource.deactivate()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopLocationTracking()
     }
 
 }

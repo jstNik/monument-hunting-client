@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.monument_hunting.domain.AuthToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -14,7 +15,7 @@ class AuthTokenManager(
     val isRefreshTokenValid: Boolean
         get() {
             val token = extractToken()
-            return token.refreshExpirationSec.seconds > System.currentTimeMillis().milliseconds
+            return token.refreshExpirationSec.seconds - 1.days > System.currentTimeMillis().milliseconds
         }
 
     val isAccessTokenValid: Boolean
