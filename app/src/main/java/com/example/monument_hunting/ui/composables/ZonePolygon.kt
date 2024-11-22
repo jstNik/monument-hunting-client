@@ -18,7 +18,7 @@ fun ZonePolygon(
 
     Polygon(
         zone.coordinates.map { it.latLng },
-        fillColor = color.copy(alpha=0.2F),
+        fillColor = if (fill) color.copy(alpha=0.2F) else color.copy(alpha = 0F),
         strokeJointType = JointType.BEVEL,
         strokeColor = color.copy(alpha = 0.5F),
         tag = zone.name,
