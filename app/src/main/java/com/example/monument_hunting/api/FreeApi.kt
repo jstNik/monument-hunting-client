@@ -18,10 +18,9 @@ interface FreeApi {
         const val BASE_URL = "https://monument-hunting-server.onrender.com/"
     }
 
-    @GET("riddles/player/{player_id}")
+    @GET("riddles/player/")
     suspend fun requestData(
-        @Header("Authorization") bearer: String,
-        @Path("player_id") playerId: Int
+        @Header("Authorization") bearer: String
     ): Response<ServerData>
 
     @FormUrlEncoded
@@ -50,5 +49,11 @@ interface FreeApi {
         @Field("email") email: String,
         @Field("password") password: String
     ): Response<AuthResponse>
+
+    @FormUrlEncoded
+    @POST()
+    suspend fun postRiddle(
+        @Field("riddle_id") riddleId: Int
+    ): Response<ServerData>
 
 }

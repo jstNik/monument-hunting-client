@@ -28,6 +28,7 @@ class CameraViewModel @Inject constructor(
                     _processingImage.value = Data.success(true)
                 } catch (e: Exception) {
                     _processingImage.value = Data.error(e.toString())
+                    throw e
                 }
             } else {
                 _processingImage.value = Data.error("Could not retrieve image uri.")

@@ -14,7 +14,7 @@ data class Monument(
     @SerializedName("name")
     var name: String = "",
     @SerializedName("zone")
-    var zone: Int = 0
+    var zoneId: Int = 0
 ){
 
     val position get() = LatLng(latitude, longitude)

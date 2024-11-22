@@ -6,6 +6,8 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -17,8 +19,12 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monument_hunting.BuildConfig.APPLICATION_ID
+import com.example.monument_hunting.domain.Riddle
 import com.example.monument_hunting.utils.Data
 import com.example.monument_hunting.view_models.CameraViewModel
+import com.example.monument_hunting.view_models.HomePageViewModel
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.SphericalUtil
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,6 +32,8 @@ import java.util.Locale
 
 @Composable
 fun CameraScreen(
+    riddle: Riddle?,
+    location: LatLng?,
     onSuccess: () -> Unit,
     onFailure: (error: String?) -> Unit
 ){
@@ -58,8 +66,14 @@ fun CameraScreen(
         when(processingImage.status) {
             Data.Status.Success -> {
                 if(processingImage.data == true) {
-                    onSuccess()
-                    cameraViewModel.resetState()
+                    if(riddle == null)
+                        onFailure("Sorry i can't find the riddle :(")
+                    else if(SphericalUtil.computeDistanceBetween(location, riddle.monument.position) > 100)
+                        onFailure("You are too far!")
+                    else {
+                        onSuccess()
+                        cameraViewModel.resetState()
+                    }
                 }
                 else
                     LaunchedEffect(Unit) {

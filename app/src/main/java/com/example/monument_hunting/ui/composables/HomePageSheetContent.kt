@@ -2,6 +2,9 @@ package com.example.monument_hunting.ui.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,46 +22,34 @@ import com.example.monument_hunting.exceptions.ApiRequestException
 import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
 import com.example.monument_hunting.utils.Data
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
 
 @Composable
 fun HomePageSheetContent(
-    serverData: Data<ServerData, ApiRequestException>,
-    playerLocation: LatLng?
+    riddle: Riddle?,
+    playerLocation: LatLng?,
 ) {
-    if(playerLocation != null){
-        when (serverData.status) {
-            Data.Status.Success -> {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "There is this riddle solve in this zone",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom=16.dp)
-                    )
-                    Text(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et commodo ipsum." +
-                        " Cras accumsan congue tellus, et elementum ipsum pellentesque sed." +
-                        " Integer ipsum augue, lobortis ac placerat sed, molestie ut magna." +
-                        " Nunc id nunc neque. Quisque gravida ante orci, nec iaculis lectus mollis sit amet." +
-                        " Sed aliquam gravida ante sit amet vestibulum. Nullam nec luctus erat. Donec a suscipit sem." +
-                        " Curabitur feugiat congue justo pellentesque interdum. Praesent convallis at mi eu bibendum." +
-                        " Vestibulum condimentum tempus tincidunt. Nam tempor non ex nec faucibus." +
-                        " Curabitur condimentum pellentesque enim, sit amet laoreet mauris semper at." +
-                        " Nam quis scelerisque orci. Morbi vel ultrices urna.",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+    if (playerLocation != null) {
 
-            Data.Status.Loading -> {
-
-            }
-
-            Data.Status.Error -> {
-
-            }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                riddle?.name ?: "No riddles found in your zone",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                riddle?.body ?: "Try to go into a different area",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+            Spacer(
+                modifier = Modifier.heightIn(min = 200.dp)
+            )
         }
     } else {
         Text(

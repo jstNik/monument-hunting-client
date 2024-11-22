@@ -7,7 +7,9 @@ data class ServerData(
     @SerializedName("player")
     var player: Player = Player(),
     @SerializedName("player_riddles")
-    var playerRiddles: List<PlayerRiddle> = listOf(),
+    var playerRiddles: List<PlayerRiddles> = listOf(),
+    @SerializedName("regions")
+    var regions: List<Region> = listOf(),
     @SerializedName("riddles")
     var riddles: List<Riddle> = listOf(),
     @SerializedName("zones")

@@ -42,12 +42,11 @@ class MapsActivity : AppCompatActivity() {
         }
         locationReceiver = LocationReceiver(locationViewModel)
         locationViewModel.startPositionTracking()
-        homePageViewModel.requestData(player!!.id)
+        homePageViewModel.requestData()
         enableEdgeToEdge()
         setContent {
             MonumentHuntingTheme {
                 ComposeTreasureMap()
-
             }
         }
     }

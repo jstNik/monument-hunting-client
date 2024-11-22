@@ -59,7 +59,7 @@ object AppModule {
                 .setBaseOptions(
                     BaseOptions.builder()
                         .setDelegate(Delegate.GPU)
-                        .setModelAssetPath("efficientnet_lite0.tflite")
+                        .setModelAssetPath("model_3_float16.tflite")
                         .build()
                 )
 //                .setScoreThreshold(0.6F)

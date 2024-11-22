@@ -25,7 +25,7 @@ fun RiddleMarker(
 
 
     val markerState = rememberMarkerState(
-        position = riddle.position
+//        position = riddle.position
     )
     val scope = rememberCoroutineScope()
 
@@ -55,12 +55,12 @@ fun RiddleMarker(
             false
         }
     ){
-        RiddleMarkerInfoWindow(
-            userLocation,
-            riddle.monument.name,
-            riddle.body,
-            riddle.position
-        )
+//        RiddleMarkerInfoWindow(
+//            userLocation,
+//            riddle.monument.name,
+//            riddle.body,
+//            riddle.position
+//        )
     }
 
 }

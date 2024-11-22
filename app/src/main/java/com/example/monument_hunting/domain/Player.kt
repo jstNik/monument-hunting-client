@@ -7,7 +7,5 @@ data class Player(
     @SerializedName("id")
     var id: Int = 0,
     @SerializedName("username")
-    var username: String = "",
-    @SerializedName("zone")
-    var zone: Int? = null
+    var username: String = ""
 )

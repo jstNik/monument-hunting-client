@@ -20,15 +20,27 @@ class HomePageViewModel @Inject constructor(
     private val _serverData = MutableStateFlow(Data.loading<ServerData, ApiRequestException>())
     val serverData get() = _serverData.asStateFlow()
 
-    fun requestData(playerId: Int) {
-        try {
-            _serverData.value = Data.loading()
-            viewModelScope.launch {
-                val zoneList = repository.requestData(playerId)
-                _serverData.value = Data.success(zoneList)
+    fun postRiddle(riddleId: Int){
+        _serverData.value = Data.loading()
+        viewModelScope.launch {
+            try {
+                val data = repository.postRiddle(riddleId)
+                _serverData.value = Data.success(data)
+            } catch (ex: ApiRequestException) {
+                _serverData.value = Data.error(ex)
             }
-        } catch (ex: ApiRequestException) {
-            _serverData.value = Data.error(ex)
+        }
+    }
+
+    fun requestData() {
+        _serverData.value = Data.loading()
+        viewModelScope.launch {
+            try {
+                val data = repository.requestData()
+                _serverData.value = Data.success(data)
+            } catch (ex: ApiRequestException) {
+                _serverData.value = Data.error(ex)
+            }
         }
     }
 

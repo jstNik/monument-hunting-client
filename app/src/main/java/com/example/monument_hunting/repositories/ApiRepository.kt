@@ -19,12 +19,20 @@ class ApiRepository @Inject constructor(
 ) {
 
     @Throws(ApiRequestException::class)
-    suspend fun requestData(playerId: Int): ServerData {
+    suspend fun requestData(): ServerData {
         val response = call {
             freeApi.requestData(
-                "Bearer ${authTokenManager.extractToken().accessToken}",
-                playerId
+                "Bearer ${authTokenManager.extractToken().accessToken}"
             )
+        }
+        validateResponse(response)
+        return response.body()!!
+    }
+
+    @Throws(ApiRequestException::class)
+    suspend fun postRiddle(riddleId: Int): ServerData{
+        val response = call{
+            freeApi.postRiddle(riddleId)
         }
         validateResponse(response)
         return response.body()!!
