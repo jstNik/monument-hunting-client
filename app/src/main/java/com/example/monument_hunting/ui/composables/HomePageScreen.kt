@@ -345,6 +345,9 @@ fun GMaps(
     res = res.format(
         Integer
             .toHexString(MaterialTheme.colorScheme.background.toArgb())
+            .replaceRange(0..1, "#"),
+        Integer
+            .toHexString(MaterialTheme.colorScheme.surface.toArgb())
             .replaceRange(0..1, "#")
     )
     val homePageViewModel = viewModel<HomePageViewModel>()

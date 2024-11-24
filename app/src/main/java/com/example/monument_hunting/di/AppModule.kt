@@ -62,7 +62,6 @@ object AppModule {
                         .setModelAssetPath("model_3_float16.tflite")
                         .build()
                 )
-//                .setScoreThreshold(0.6F)
                 .setMaxResults(10)
                 .setRunningMode(RunningMode.IMAGE)
                 .build()
