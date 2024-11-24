@@ -1,17 +1,14 @@
 package com.example.monument_hunting.view_models
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.monument_hunting.domain.AuthResponse
-import com.example.monument_hunting.domain.Player
+import com.example.monument_hunting.domain.api_domain._Player
 import com.example.monument_hunting.exceptions.ApiRequestException
 import com.example.monument_hunting.repositories.ApiRepository
 import com.example.monument_hunting.utils.Data
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +19,7 @@ class LoginSignupViewModel @Inject constructor(
     private val repository: ApiRepository
 ) : ViewModel() {
 
-    private val _loginSignupSuc = MutableStateFlow(Data.success<Player, String>(null))
+    private val _loginSignupSuc = MutableStateFlow(Data.success<_Player, String>(null))
     val loginSignupSuc
         get() = _loginSignupSuc.asStateFlow()
 
@@ -31,8 +28,8 @@ class LoginSignupViewModel @Inject constructor(
             try {
                 val res = repository.verifyToken()
                 _loginSignupSuc.value = Data.success(res)
-            } catch (e: ApiRequestException) {
-                Log.d("${e.responseCode}", "${e.message}")
+            } catch (_: ApiRequestException) {
+                _loginSignupSuc.value = Data.success(null)
             }
         }
     }

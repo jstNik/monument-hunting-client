@@ -1,15 +1,12 @@
 package com.example.monument_hunting.domain
 
+import com.google.android.gms.maps.model.LatLng
 
-import com.google.gson.annotations.SerializedName
+class Zone(
 
-data class Zone(
-    @SerializedName("coordinates")
-    var coordinates: List<Coordinate> = listOf(),
-    @SerializedName("id")
-    var id: Int = 0,
-    @SerializedName("name")
-    var name: String = "",
-    @SerializedName("region")
-    var regionId: Int = 0
+    val id: Int = 0,
+    val name: String = "",
+    val monument: Monument = Monument(),
+    val borders: List<LatLng> = listOf()
+
 )

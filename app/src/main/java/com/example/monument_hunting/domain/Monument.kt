@@ -1,22 +1,14 @@
 package com.example.monument_hunting.domain
 
-
 import com.google.android.gms.maps.model.LatLng
-import com.google.gson.annotations.SerializedName
 
 data class Monument(
-    @SerializedName("id")
-    var id: Int = 0,
-    @SerializedName("latitude")
-    var latitude: Double = 0.0,
-    @SerializedName("longitude")
-    var longitude: Double = 0.0,
-    @SerializedName("name")
-    var name: String = "",
-    @SerializedName("zone")
-    var zoneId: Int = 0
-){
 
-    val position get() = LatLng(latitude, longitude)
+    val id: Int = 0,
+    val name: String = "",
+    val position: LatLng = LatLng(0.0, 0.0),
+    val riddle: Riddle = Riddle(),
+    val category: String = ""
+){
 
 }

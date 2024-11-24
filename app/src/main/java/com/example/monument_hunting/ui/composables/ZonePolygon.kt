@@ -1,27 +1,51 @@
 package com.example.monument_hunting.ui.composables
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.monument_hunting.domain.Zone
+import com.example.monument_hunting.domain.Region
 import com.google.android.gms.maps.model.JointType
 import com.google.maps.android.compose.GoogleMapComposable
+import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 @GoogleMapComposable
 fun ZonePolygon(
-    zone: Zone,
-    color: Color,
-    fill: Boolean
+    region: Region
 ){
 
     Polygon(
-        zone.coordinates.map { it.latLng },
-        fillColor = if (fill) color.copy(alpha=0.2F) else color.copy(alpha = 0F),
-        strokeJointType = JointType.BEVEL,
-        strokeColor = color.copy(alpha = 0.5F),
-        tag = zone.name,
+        region.borders,
+        fillColor = Color.Transparent,
+        strokeColor = region.color.copy(alpha = 0.25F),
+        strokeJointType = JointType.ROUND,
+        strokeWidth = 5F
     )
+
+    region.zones.forEach { zone ->
+
+        val fill: Boolean = zone.monument.riddle.isFound
+
+        Polygon(
+            zone.borders,
+            fillColor = if (fill) region.color.copy(alpha = 0.2F) else region.color.copy(alpha = 0F),
+            strokeJointType = JointType.ROUND,
+            strokeColor = region.color.copy(alpha = 0.25F),
+            strokeWidth = 5F,
+            tag = zone.name
+        )
+        MarkerInfoWindow(
+            rememberMarkerState(position = zone.monument.position)
+        ){
+            Column {
+                Text(zone.name)
+                Text(zone.monument.name)
+                Text(zone.monument.riddle.title)
+            }
+        }
+    }
 
 }

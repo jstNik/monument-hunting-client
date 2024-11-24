@@ -1,8 +1,9 @@
 package com.example.monument_hunting.view_models
 
-import android.net.Uri
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.monument_hunting.domain.Monument
 import com.example.monument_hunting.repositories.MediaPipeRepository
 import com.example.monument_hunting.utils.Data
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,19 +20,21 @@ class CameraViewModel @Inject constructor(
     private var _processingImage = MutableStateFlow(Data.success<Boolean, String>(false))
     val processingImage = _processingImage.asStateFlow()
 
-    fun classifyImage(uri: Uri?){
+    fun classifyImage(bitmap: Bitmap?, monument: Monument?){
         _processingImage.value = Data.loading()
         viewModelScope.launch {
-            if (uri != null) {
+            if (bitmap != null) {
                 try {
-                    mediaPipeRepository.classifyImage(uri)
-                    _processingImage.value = Data.success(true)
+                    val result = mediaPipeRepository.classifyImage(bitmap)
+                    if(result == monument?.category)
+                        _processingImage.value = Data.success(true)
+                    else
+                        _processingImage.value = Data.error("Sorry, i haven't recognized the monument. Try again!")
                 } catch (e: Exception) {
                     _processingImage.value = Data.error(e.toString())
-                    throw e
                 }
             } else {
-                _processingImage.value = Data.error("Could not retrieve image uri.")
+                _processingImage.value = Data.error("Could not obtain image.")
             }
         }
     }

@@ -1,16 +1,14 @@
 package com.example.monument_hunting.api
 
 import com.example.monument_hunting.domain.AuthResponse
-import com.example.monument_hunting.domain.AuthToken
-import com.example.monument_hunting.domain.Player
-import com.example.monument_hunting.domain.ServerData
+import com.example.monument_hunting.domain.api_domain.ServerData
+import com.example.monument_hunting.domain.api_domain._Player
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 interface FreeApi {
 
@@ -33,7 +31,7 @@ interface FreeApi {
     @POST("players/auth/verify/")
     suspend fun verifyToken(
         @Field("access_token") accessToken: String
-    ): Response<Player>
+    ): Response<_Player>
 
     @FormUrlEncoded
     @POST("players/login/")
@@ -54,6 +52,6 @@ interface FreeApi {
     @POST()
     suspend fun postRiddle(
         @Field("riddle_id") riddleId: Int
-    ): Response<ServerData>
+    ): Response<Void>
 
 }

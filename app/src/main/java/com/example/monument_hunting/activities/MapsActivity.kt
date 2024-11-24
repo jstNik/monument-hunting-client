@@ -9,9 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.monument_hunting.api.FreeApi
-import com.example.monument_hunting.domain.Player
-import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
+import com.example.monument_hunting.domain.api_domain._Player
 import com.example.monument_hunting.ui.composables.ComposeTreasureMap
+import com.example.monument_hunting.ui.theme.MonumentHuntingTheme
 import com.example.monument_hunting.utils.LocationReceiver
 import com.example.monument_hunting.view_models.HomePageViewModel
 import com.example.monument_hunting.view_models.LocationViewModel
@@ -32,7 +32,7 @@ class MapsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val player = intent.extras?.getString("player")?.let{
-            Gson().fromJson(it, Player::class.java)
+            Gson().fromJson(it, _Player::class.java)
         }
         if(player == null){
             Toast.makeText(this, "Something went wrong while retrieving your id", Toast.LENGTH_LONG).show()

@@ -70,7 +70,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesMediaPipeRepository(@ApplicationContext context: Context, imageClassifier: ImageClassifier) =
-        MediaPipeRepository(context, imageClassifier)
+    fun providesMediaPipeRepository(imageClassifier: ImageClassifier) =
+        MediaPipeRepository(imageClassifier)
 
 }

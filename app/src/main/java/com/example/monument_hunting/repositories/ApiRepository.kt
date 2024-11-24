@@ -2,8 +2,8 @@ package com.example.monument_hunting.repositories
 
 import com.example.monument_hunting.api.AuthTokenManager
 import com.example.monument_hunting.api.FreeApi
-import com.example.monument_hunting.domain.Player
-import com.example.monument_hunting.domain.ServerData
+import com.example.monument_hunting.domain.api_domain.ServerData
+import com.example.monument_hunting.domain.api_domain._Player
 import com.example.monument_hunting.exceptions.ApiRequestException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -30,16 +30,17 @@ class ApiRepository @Inject constructor(
     }
 
     @Throws(ApiRequestException::class)
-    suspend fun postRiddle(riddleId: Int): ServerData{
+    suspend fun postRiddle(riddleId: Int): Boolean{
         val response = call{
             freeApi.postRiddle(riddleId)
         }
-        validateResponse(response)
-        return response.body()!!
+        if (response.isSuccessful)
+            return true
+        else throw ApiRequestException(response.code(), response.errorBody()?.string())
     }
 
     @Throws(ApiRequestException::class)
-    suspend fun refreshToken(): Player? {
+    suspend fun refreshToken(): _Player? {
         if(!authTokenManager.isRefreshTokenValid)
             return null
         val response = call{
@@ -52,7 +53,7 @@ class ApiRepository @Inject constructor(
     }
 
     @Throws(ApiRequestException::class)
-    suspend fun verifyToken(): Player? {
+    suspend fun verifyToken(): _Player? {
         try {
             if (!authTokenManager.isAccessTokenValid)
                 return refreshToken()
@@ -67,7 +68,7 @@ class ApiRepository @Inject constructor(
     }
 
     @Throws(ApiRequestException::class)
-    suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String): Player {
+    suspend fun loginSignup(signup: Boolean, username: String, email: String, password: String): _Player {
         val response = withContext(dispatcher) {
             try {
                 if (signup)

@@ -8,7 +8,6 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Looper
-import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel
 import com.example.monument_hunting.utils.Data
@@ -17,13 +16,11 @@ import com.example.monument_hunting.utils.LocationSourceImpl
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -80,7 +77,6 @@ class LocationViewModel @Inject constructor(
     @SuppressLint("MissingPermission")
     fun onResult(activityResult: ActivityResult) {
         if (activityResult.resultCode == RESULT_OK) {
-            Log.d("RESPONSE", "SUCCESS")
             if (havePerms())
                 startPositionTracking()
         }

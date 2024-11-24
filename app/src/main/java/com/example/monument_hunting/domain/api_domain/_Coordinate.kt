@@ -1,10 +1,10 @@
-package com.example.monument_hunting.domain
+package com.example.monument_hunting.domain.api_domain
 
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 
-data class Coordinate(
+data class _Coordinate(
     @SerializedName("latitude")
     var latitude: Double = 0.0,
     @SerializedName("longitude")

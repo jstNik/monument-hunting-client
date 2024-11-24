@@ -1,7 +1,5 @@
 package com.example.monument_hunting.utils
 
-import android.app.PendingIntent
-import android.content.Intent
 import com.google.android.gms.common.api.ResolvableApiException
 
 sealed class LocationError(open val message: String?) {
