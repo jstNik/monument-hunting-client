@@ -1,5 +1,6 @@
 package com.example.monument_hunting.ui.composables
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,8 +33,8 @@ fun HomePageSheetContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
             .fillMaxWidth()
-            .padding(16.dp, bottom = 24.dp)
     ) {
         if (playerLocation != null) {
             Text(
@@ -46,8 +47,10 @@ fun HomePageSheetContent(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            Spacer(
-                modifier = Modifier.heightIn(min = 150.dp)
+            Image(
+                painterResource(R.drawable.florence_skyline),
+                null,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
             )
             IconButton(
                 onClick = onClick,
@@ -67,7 +70,7 @@ fun HomePageSheetContent(
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
-                        "Found it!!",
+                        "You think you found it?!",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -78,8 +81,10 @@ fun HomePageSheetContent(
                 "Position can not be obtained",
                 style = MaterialTheme.typography.titleLarge
             )
-            Spacer(
-                modifier = Modifier.heightIn(min = 200.dp)
+            Image(
+                painterResource(R.drawable.florence_skyline),
+                null,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
             )
         }
 
