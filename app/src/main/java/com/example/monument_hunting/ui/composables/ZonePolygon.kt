@@ -37,15 +37,6 @@ fun ZonePolygon(
             strokeWidth = 5F,
             tag = zone.name
         )
-        MarkerInfoWindow(
-            rememberMarkerState(position = zone.monument.position)
-        ){
-            Column {
-                Text(zone.name)
-                Text(zone.monument.name)
-                Text(zone.monument.riddle.title)
-            }
-        }
     }
 
 }

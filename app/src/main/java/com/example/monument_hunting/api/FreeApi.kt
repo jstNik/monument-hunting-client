@@ -49,8 +49,9 @@ interface FreeApi {
     ): Response<AuthResponse>
 
     @FormUrlEncoded
-    @POST()
+    @POST("riddles/player/")
     suspend fun postRiddle(
+        @Header("Authorization") bearer: String,
         @Field("riddle_id") riddleId: Int
     ): Response<Void>
 

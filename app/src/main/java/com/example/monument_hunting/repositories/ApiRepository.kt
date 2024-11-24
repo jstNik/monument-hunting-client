@@ -32,7 +32,10 @@ class ApiRepository @Inject constructor(
     @Throws(ApiRequestException::class)
     suspend fun postRiddle(riddleId: Int): Boolean{
         val response = call{
-            freeApi.postRiddle(riddleId)
+            freeApi.postRiddle(
+                "Bearer ${authTokenManager.extractToken().accessToken}",
+                riddleId
+            )
         }
         if (response.isSuccessful)
             return true

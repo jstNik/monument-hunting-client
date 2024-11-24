@@ -22,11 +22,12 @@ class HomePageViewModel @Inject constructor(
     val catalog get() = _catalog.asStateFlow()
 
     fun postRiddle(riddle: Riddle){
+        val data = catalog.value.data
         _catalog.value = Data.loading()
         viewModelScope.launch {
             try {
                 riddle.isFound = repository.postRiddle(riddle.id)
-                _catalog.value = Data.success(_catalog.value.data)
+                _catalog.value = Data.success(data)
             } catch (ex: ApiRequestException) {
                 _catalog.value = Data.error(ex)
             }
