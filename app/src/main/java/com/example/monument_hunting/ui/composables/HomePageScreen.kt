@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -339,17 +341,13 @@ fun GMaps(
     ) {
 
     val bufferReader =
-        LocalContext.current.resources.openRawResource(R.raw.maps_style).bufferedReader()
+        LocalContext.current.resources.openRawResource(
+            if(isSystemInDarkTheme()) R.raw.dark_maps_style else R.raw.light_maps_style
+        ).bufferedReader()
     var res = bufferReader.use { it.readText() }
+
     bufferReader.close()
-    res = res.format(
-        Integer
-            .toHexString(MaterialTheme.colorScheme.background.toArgb())
-            .replaceRange(0..1, "#"),
-        Integer
-            .toHexString(MaterialTheme.colorScheme.surface.toArgb())
-            .replaceRange(0..1, "#")
-    )
+
     val homePageViewModel = viewModel<HomePageViewModel>()
     val catalog by homePageViewModel.catalog.collectAsStateWithLifecycle()
 
@@ -373,7 +371,8 @@ fun GMaps(
             latLngBoundsForCameraTarget = LatLngBounds(
                 LatLng(43.759474957960556, 11.230407175235507),
                 LatLng(43.78624915408978, 11.273451263581741)
-            )
+            ),
+            minZoomPreference = 13F
         )
     ) {
 
@@ -385,11 +384,13 @@ fun GMaps(
                 }
             }
 
-            Data.Status.Loading ->
-                Toast.makeText(LocalContext.current, "Loading", Toast.LENGTH_LONG).show()
+            Data.Status.Loading ->{
 
-            Data.Status.Error ->
-                Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
+            }
+
+            Data.Status.Error ->{
+
+            }
 
         }
 
